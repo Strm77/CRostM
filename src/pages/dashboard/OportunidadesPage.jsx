@@ -3,13 +3,14 @@ import {
   Box,
   Button,
   Card,
+  CardActionArea,
   CardContent,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Tab,
   Tabs,
@@ -17,10 +18,13 @@ import {
   Typography,
 } from '@mui/material'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
+import { useNavigate } from 'react-router-dom'
+import { useOpportunities } from '../../context/OpportunitiesContext.jsx'
 
 export default function OportunidadesPage() {
+  const navigate = useNavigate()
+  const { opportunities, addOpportunity } = useOpportunities()
   const [tab, setTab] = useState('lista')
-  const [opportunities, setOpportunities] = useState([])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [clientName, setClientName] = useState('')
   const [opportunityName, setOpportunityName] = useState('')
@@ -34,8 +38,12 @@ export default function OportunidadesPage() {
   function handleCreate(event) {
     event.preventDefault()
     if (!clientName.trim() || !opportunityName.trim()) return
-    setOpportunities((prev) => [...prev, { id: crypto.randomUUID(), clientName, opportunityName }])
+    addOpportunity(clientName, opportunityName)
     handleClose()
+  }
+
+  function openOpportunity(id) {
+    navigate(`/dashboard/oportunidades/${id}`)
   }
 
   return (
@@ -61,23 +69,25 @@ export default function OportunidadesPage() {
       ) : tab === 'lista' ? (
         <List className="border border-gray-200" sx={{ bgcolor: 'background.paper' }}>
           {opportunities.map((opp) => (
-            <ListItem key={opp.id} divider>
+            <ListItemButton key={opp.id} divider onClick={() => openOpportunity(opp.id)}>
               <ListItemText primary={opp.opportunityName} secondary={opp.clientName} />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       ) : (
         <Box className="flex flex-wrap gap-4">
           {opportunities.map((opp) => (
             <Card key={opp.id} variant="outlined" className="w-64">
-              <CardContent>
-                <Typography variant="subtitle1" className="font-medium">
-                  {opp.opportunityName}
-                </Typography>
-                <Typography variant="body2" className="text-gray-500">
-                  {opp.clientName}
-                </Typography>
-              </CardContent>
+              <CardActionArea onClick={() => openOpportunity(opp.id)}>
+                <CardContent>
+                  <Typography variant="subtitle1" className="font-medium">
+                    {opp.opportunityName}
+                  </Typography>
+                  <Typography variant="body2" className="text-gray-500">
+                    {opp.clientName}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
             </Card>
           ))}
         </Box>

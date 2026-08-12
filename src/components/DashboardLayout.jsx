@@ -44,14 +44,18 @@ export default function DashboardLayout() {
         </Toolbar>
         <Divider />
         <List className="flex-1" sx={{ flexGrow: 1 }}>
-          {menuItems.map(({ label, path, icon: Icon }) => (
-            <ListItemButton key={path} selected={location.pathname === path} onClick={() => navigate(path)}>
-              <ListItemIcon>
-                <Icon />
-              </ListItemIcon>
-              <ListItemText primary={label} />
-            </ListItemButton>
-          ))}
+          {menuItems.map(({ label, path, icon: Icon }) => {
+            const selected =
+              path === '/dashboard' ? location.pathname === path : location.pathname.startsWith(path)
+            return (
+              <ListItemButton key={path} selected={selected} onClick={() => navigate(path)}>
+                <ListItemIcon>
+                  <Icon />
+                </ListItemIcon>
+                <ListItemText primary={label} />
+              </ListItemButton>
+            )
+          })}
         </List>
         <Divider />
         <List>
