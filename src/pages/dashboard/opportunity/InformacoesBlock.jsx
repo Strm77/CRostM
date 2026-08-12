@@ -17,6 +17,7 @@ import {
 } from '@mui/material'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import { useClients } from '../../../context/ClientsContext.jsx'
+import { usePartners } from '../../../context/PartnersContext.jsx'
 
 function InfoRow({ label, value }) {
   return (
@@ -33,13 +34,16 @@ function InfoRow({ label, value }) {
 
 export default function InformacoesBlock({ opportunity, onSave }) {
   const { clients, getClient } = useClients()
+  const { partners, getPartner } = usePartners()
   const [open, setOpen] = useState(false)
   const [clientId, setClientId] = useState(opportunity.clientId)
+  const [partnerId, setPartnerId] = useState(opportunity.partnerId ?? '')
   const [opportunityName, setOpportunityName] = useState(opportunity.opportunityName)
   const [number, setNumber] = useState(opportunity.number)
 
   function handleOpen() {
     setClientId(opportunity.clientId)
+    setPartnerId(opportunity.partnerId ?? '')
     setOpportunityName(opportunity.opportunityName)
     setNumber(opportunity.number)
     setOpen(true)
@@ -48,7 +52,7 @@ export default function InformacoesBlock({ opportunity, onSave }) {
   function handleSubmit(event) {
     event.preventDefault()
     if (!clientId || !opportunityName.trim() || !number.trim()) return
-    onSave({ clientId, opportunityName, number })
+    onSave({ clientId, partnerId: partnerId || null, opportunityName, number })
     setOpen(false)
   }
 
@@ -66,6 +70,7 @@ export default function InformacoesBlock({ opportunity, onSave }) {
       </Box>
       <Box className="flex flex-col gap-2">
         <InfoRow label="Cliente" value={getClient(opportunity.clientId)?.name ?? 'Cliente removido'} />
+        <InfoRow label="Parceiro" value={opportunity.partnerId ? (getPartner(opportunity.partnerId)?.name ?? 'Parceiro removido') : 'Nenhum'} />
         <InfoRow label="Oportunidade" value={opportunity.opportunityName} />
         <InfoRow label="Número" value={opportunity.number} />
         <InfoRow label="Criada em" value={createdAtLabel} />
@@ -98,6 +103,24 @@ export default function InformacoesBlock({ opportunity, onSave }) {
               fullWidth
             />
             <TextField label="Número" value={number} onChange={(event) => setNumber(event.target.value)} fullWidth />
+            <FormControl fullWidth>
+              <InputLabel id="opp-partner-select-label">Parceiro (opcional)</InputLabel>
+              <Select
+                labelId="opp-partner-select-label"
+                label="Parceiro (opcional)"
+                value={partnerId}
+                onChange={(event) => setPartnerId(event.target.value)}
+              >
+                <MenuItem value="">
+                  <em>Nenhum</em>
+                </MenuItem>
+                {partners.map((partner) => (
+                  <MenuItem key={partner.id} value={partner.id}>
+                    {partner.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancelar</Button>

@@ -2,6 +2,7 @@ import { Box, Divider, Drawer, List, ListItemButton, ListItemIcon, ListItemText,
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded'
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded'
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded'
+import HandshakeRoundedIcon from '@mui/icons-material/HandshakeRounded'
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
@@ -14,6 +15,7 @@ const menuItems = [
   { label: 'Dashboard', path: '/dashboard', icon: DashboardRoundedIcon },
   { label: 'Oportunidades', path: '/dashboard/oportunidades', icon: TrendingUpRoundedIcon },
   { label: 'Clientes', path: '/dashboard/clientes', icon: GroupsRoundedIcon },
+  { label: 'Parceiros', path: '/dashboard/parceiros', icon: HandshakeRoundedIcon },
   { label: 'Perfil', path: '/dashboard/perfil', icon: PersonRoundedIcon },
   { label: 'Configurações', path: '/dashboard/configuracoes', icon: SettingsRoundedIcon },
 ]

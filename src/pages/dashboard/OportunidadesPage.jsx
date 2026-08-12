@@ -25,26 +25,30 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useOpportunities } from '../../context/OpportunitiesContext.jsx'
 import { useClients } from '../../context/ClientsContext.jsx'
+import { usePartners } from '../../context/PartnersContext.jsx'
 
 export default function OportunidadesPage() {
   const navigate = useNavigate()
   const { opportunities, addOpportunity } = useOpportunities()
   const { clients, getClient } = useClients()
+  const { partners } = usePartners()
   const [tab, setTab] = useState('lista')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [clientId, setClientId] = useState('')
+  const [partnerId, setPartnerId] = useState('')
   const [opportunityName, setOpportunityName] = useState('')
 
   function handleClose() {
     setDialogOpen(false)
     setClientId('')
+    setPartnerId('')
     setOpportunityName('')
   }
 
   function handleCreate(event) {
     event.preventDefault()
     if (!clientId || !opportunityName.trim()) return
-    addOpportunity(clientId, opportunityName)
+    addOpportunity(clientId, opportunityName, partnerId || null)
     handleClose()
   }
 
@@ -139,6 +143,26 @@ export default function OportunidadesPage() {
               onChange={(event) => setOpportunityName(event.target.value)}
               fullWidth
             />
+            {partners.length > 0 && (
+              <FormControl fullWidth>
+                <InputLabel id="partner-select-label">Parceiro (opcional)</InputLabel>
+                <Select
+                  labelId="partner-select-label"
+                  label="Parceiro (opcional)"
+                  value={partnerId}
+                  onChange={(event) => setPartnerId(event.target.value)}
+                >
+                  <MenuItem value="">
+                    <em>Nenhum</em>
+                  </MenuItem>
+                  {partners.map((partner) => (
+                    <MenuItem key={partner.id} value={partner.id}>
+                      {partner.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancelar</Button>
