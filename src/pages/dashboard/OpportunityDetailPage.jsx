@@ -9,6 +9,7 @@ import InformacoesBlock from './opportunity/InformacoesBlock.jsx'
 import FinanceiroBlock from './opportunity/FinanceiroBlock.jsx'
 import TimelineBlock from './opportunity/TimelineBlock.jsx'
 import AcoesBlock from './opportunity/AcoesBlock.jsx'
+import NotesEditor from './opportunity/NotesEditor.jsx'
 
 export default function OpportunityDetailPage() {
   const { id } = useParams()
@@ -17,6 +18,7 @@ export default function OpportunityDetailPage() {
     getOpportunity,
     updateOpportunity,
     updateFinancials,
+    updateNotes,
     setStage,
     addTimelineEvent,
     updateTimelineEvent,
@@ -81,27 +83,35 @@ export default function OpportunityDetailPage() {
 
       <StageStepper stage={opportunity.stage} onChange={(stage) => setStage(opportunity.id, stage)} />
 
-      <Box className="flex flex-wrap gap-4">
-        <InformacoesBlock opportunity={opportunity} onSave={(patch) => updateOpportunity(opportunity.id, patch)} />
-        <FinanceiroBlock
-          financials={opportunity.financials}
-          onSave={(financials) => updateFinancials(opportunity.id, financials)}
-        />
+      <Box className="flex flex-col gap-4 md:flex-row md:items-stretch">
+        <Box className="flex w-full flex-col gap-4 md:w-1/2">
+          <Box className="flex flex-wrap gap-4">
+            <InformacoesBlock opportunity={opportunity} onSave={(patch) => updateOpportunity(opportunity.id, patch)} />
+            <FinanceiroBlock
+              financials={opportunity.financials}
+              onSave={(financials) => updateFinancials(opportunity.id, financials)}
+            />
+          </Box>
+
+          <TimelineBlock
+            events={opportunity.timelineEvents}
+            onAdd={(event) => addTimelineEvent(opportunity.id, event)}
+            onUpdate={(eventId, patch) => updateTimelineEvent(opportunity.id, eventId, patch)}
+            onDelete={(eventId) => deleteTimelineEvent(opportunity.id, eventId)}
+          />
+
+          <AcoesBlock
+            actions={opportunity.actions}
+            onAdd={(action) => addAction(opportunity.id, action)}
+            onUpdate={(actionId, patch) => updateAction(opportunity.id, actionId, patch)}
+            onDelete={(actionId) => deleteAction(opportunity.id, actionId)}
+          />
+        </Box>
+
+        <Box className="flex w-full md:w-1/2">
+          <NotesEditor value={opportunity.notes} onChange={(notes) => updateNotes(opportunity.id, notes)} />
+        </Box>
       </Box>
-
-      <TimelineBlock
-        events={opportunity.timelineEvents}
-        onAdd={(event) => addTimelineEvent(opportunity.id, event)}
-        onUpdate={(eventId, patch) => updateTimelineEvent(opportunity.id, eventId, patch)}
-        onDelete={(eventId) => deleteTimelineEvent(opportunity.id, eventId)}
-      />
-
-      <AcoesBlock
-        actions={opportunity.actions}
-        onAdd={(action) => addAction(opportunity.id, action)}
-        onUpdate={(actionId, patch) => updateAction(opportunity.id, actionId, patch)}
-        onDelete={(actionId) => deleteAction(opportunity.id, actionId)}
-      />
 
       <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)}>
         <DialogTitle>Excluir oportunidade?</DialogTitle>

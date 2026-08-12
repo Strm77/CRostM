@@ -27,8 +27,13 @@ export function OpportunitiesProvider({ children }) {
         financials: { estimatedValue: null, closedValue: null, probability: null },
         timelineEvents: [createTimelineEvent('Oportunidade criada')],
         actions: [],
+        notes: '',
       },
     ])
+  }, [])
+
+  const updateNotes = useCallback((id, notes) => {
+    setOpportunities((prev) => prev.map((opp) => (opp.id === id ? { ...opp, notes } : opp)))
   }, [])
 
   const updateOpportunity = useCallback((id, patch) => {
@@ -129,6 +134,7 @@ export function OpportunitiesProvider({ children }) {
         addOpportunity,
         updateOpportunity,
         updateFinancials,
+        updateNotes,
         setStage,
         addTimelineEvent,
         updateTimelineEvent,

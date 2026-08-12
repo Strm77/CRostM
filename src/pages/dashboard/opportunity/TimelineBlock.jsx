@@ -61,22 +61,18 @@ export default function TimelineBlock({ events, onAdd, onUpdate, onDelete }) {
         </Button>
       </Box>
 
-      <Box className="flex flex-col">
+      <Box className="flex items-start overflow-x-auto pb-2">
         {events.map((event, index) => (
-          <Box key={event.id} className="flex gap-3">
-            <Box className="flex flex-col items-center">
-              <Box className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-[#7c3aed]" />
-              {index < events.length - 1 && <Box className="w-px flex-1 bg-gray-200" />}
-            </Box>
-            <Box className="flex flex-1 items-start justify-between gap-2 pb-4">
-              <Box>
-                <Typography variant="body2" className="font-medium">
-                  {event.label}
-                </Typography>
-                <Typography variant="caption" className="text-gray-500">
-                  {new Date(event.date).toLocaleString('pt-BR')}
-                </Typography>
-              </Box>
+          <Box key={event.id} className="flex shrink-0 items-start">
+            {index > 0 && <Box className="mt-[5px] h-px w-8 shrink-0 bg-gray-200" />}
+            <Box className="flex w-40 shrink-0 flex-col items-center gap-1 text-center">
+              <Box className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#7c3aed]" />
+              <Typography variant="body2" className="font-medium">
+                {event.label}
+              </Typography>
+              <Typography variant="caption" className="text-gray-500">
+                {new Date(event.date).toLocaleString('pt-BR')}
+              </Typography>
               <Box className="flex gap-1">
                 <IconButton size="small" onClick={() => openEdit(event)} aria-label="Editar etapa">
                   <EditRoundedIcon fontSize="inherit" />
