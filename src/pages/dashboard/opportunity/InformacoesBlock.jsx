@@ -30,17 +30,19 @@ export default function InformacoesBlock({ opportunity, onSave }) {
   const [open, setOpen] = useState(false)
   const [clientName, setClientName] = useState(opportunity.clientName)
   const [opportunityName, setOpportunityName] = useState(opportunity.opportunityName)
+  const [number, setNumber] = useState(opportunity.number)
 
   function handleOpen() {
     setClientName(opportunity.clientName)
     setOpportunityName(opportunity.opportunityName)
+    setNumber(opportunity.number)
     setOpen(true)
   }
 
   function handleSubmit(event) {
     event.preventDefault()
-    if (!clientName.trim() || !opportunityName.trim()) return
-    onSave({ clientName, opportunityName })
+    if (!clientName.trim() || !opportunityName.trim() || !number.trim()) return
+    onSave({ clientName, opportunityName, number })
     setOpen(false)
   }
 
@@ -80,6 +82,7 @@ export default function InformacoesBlock({ opportunity, onSave }) {
               onChange={(event) => setOpportunityName(event.target.value)}
               fullWidth
             />
+            <TextField label="Número" value={number} onChange={(event) => setNumber(event.target.value)} fullWidth />
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancelar</Button>
