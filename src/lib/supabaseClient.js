@@ -1,25 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Preencha VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env (local) ou nas
-// variáveis de ambiente do projeto na Vercel com as credenciais do seu
-// projeto Supabase para habilitar a autenticação real.
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-anon-key'
+// A anon key do Supabase é uma credencial pública por design (protegida por
+// RLS no banco, não por sigilo), então é seguro usá-la como padrão aqui.
+// VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY continuam disponíveis para
+// apontar para outro projeto Supabase (ex: ambiente local) sem editar código.
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://szrihlwaqjuzqcchhnpy.supabase.co'
+const supabaseAnonKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cmlobHdhcWp1enFjY2hobnB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NTQ5MDgsImV4cCI6MjEwMjEzMDkwOH0.QtrXFEkon6tBQLNileu6zEk2MBNZJPDYfhykfwJmggg'
 
-// Quando as variáveis não são configuradas, o cliente aponta para uma URL
-// inexistente e qualquer chamada falha com "TypeError: Failed to fetch" —
-// um erro de rede genérico e pouco claro. Esse flag permite exibir uma
-// mensagem melhor na UI em vez de deixar o erro cru estourar.
-export const isSupabaseConfigured = Boolean(
-  import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY,
-)
-
-if (!isSupabaseConfigured) {
-  console.error(
-    '[Supabase] VITE_SUPABASE_URL e/ou VITE_SUPABASE_ANON_KEY não configuradas. ' +
-      'Defina-as nas variáveis de ambiente do projeto (na Vercel: Settings > Environment Variables) ' +
-      'e faça um novo deploy.',
-  )
-}
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
