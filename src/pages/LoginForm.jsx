@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Alert, Box, Button, TextField } from '@mui/material'
-import { supabase } from '../lib/supabaseClient.js'
+import { isSupabaseConfigured, supabase } from '../lib/supabaseClient.js'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -13,10 +13,27 @@ export default function LoginForm() {
     setLoading(true)
     setMessage(null)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (!isSupabaseConfigured) {
+      setLoading(false)
+      setMessage({
+        type: 'error',
+        text: 'Supabase não está configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY nas variáveis de ambiente do projeto e faça um novo deploy.',
+      })
+      return
+    }
 
-    setLoading(false)
-    setMessage(error ? { type: 'error', text: error.message } : { type: 'success', text: 'Login realizado com sucesso!' })
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+      setMessage(error ? { type: 'error', text: error.message } : { type: 'success', text: 'Login realizado com sucesso!' })
+    } catch {
+      setMessage({
+        type: 'error',
+        text: 'Não foi possível conectar ao Supabase. Verifique sua conexão e as credenciais configuradas no projeto.',
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
