@@ -1,10 +1,18 @@
 import { Route, Routes } from 'react-router-dom'
 import AuthPage from './pages/AuthPage.jsx'
+import DashboardLayout from './components/DashboardLayout.jsx'
+import DashboardHome from './pages/dashboard/DashboardHome.jsx'
+import PlaceholderPage from './pages/dashboard/PlaceholderPage.jsx'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<AuthPage />} />
+      <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<DashboardHome />} />
+        <Route path="perfil" element={<PlaceholderPage title="Perfil" />} />
+        <Route path="configuracoes" element={<PlaceholderPage title="Configurações" />} />
+      </Route>
     </Routes>
   )
 }

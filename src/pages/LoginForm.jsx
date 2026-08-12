@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Alert, Box, Button, TextField } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient.js'
 
 export default function LoginForm() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,7 +27,11 @@ export default function LoginForm() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
 
-      setMessage(error ? { type: 'error', text: error.message } : { type: 'success', text: 'Login realizado com sucesso!' })
+      if (error) {
+        setMessage({ type: 'error', text: error.message })
+      } else {
+        navigate('/dashboard')
+      }
     } catch {
       setMessage({
         type: 'error',
