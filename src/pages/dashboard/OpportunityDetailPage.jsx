@@ -4,6 +4,7 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useOpportunities } from '../../context/OpportunitiesContext.jsx'
+import { useClients } from '../../context/ClientsContext.jsx'
 import StageStepper from './opportunity/StageStepper.jsx'
 import InformacoesBlock from './opportunity/InformacoesBlock.jsx'
 import FinanceiroBlock from './opportunity/FinanceiroBlock.jsx'
@@ -33,6 +34,7 @@ export default function OpportunityDetailPage() {
     completeTodo,
     deleteOpportunity,
   } = useOpportunities()
+  const { getClient } = useClients()
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
 
   const opportunity = getOpportunity(id)
@@ -81,7 +83,7 @@ export default function OpportunityDetailPage() {
             {opportunity.opportunityName}
           </Typography>
           <Typography variant="subtitle1" className="text-gray-500">
-            {opportunity.clientName}
+            {getClient(opportunity.clientId)?.name ?? 'Cliente removido'}
           </Typography>
         </Box>
       </Box>

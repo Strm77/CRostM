@@ -6,12 +6,17 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   TextField,
   Typography,
 } from '@mui/material'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
+import { useClients } from '../../../context/ClientsContext.jsx'
 
 function InfoRow({ label, value }) {
   return (
@@ -27,13 +32,14 @@ function InfoRow({ label, value }) {
 }
 
 export default function InformacoesBlock({ opportunity, onSave }) {
+  const { clients, getClient } = useClients()
   const [open, setOpen] = useState(false)
-  const [clientName, setClientName] = useState(opportunity.clientName)
+  const [clientId, setClientId] = useState(opportunity.clientId)
   const [opportunityName, setOpportunityName] = useState(opportunity.opportunityName)
   const [number, setNumber] = useState(opportunity.number)
 
   function handleOpen() {
-    setClientName(opportunity.clientName)
+    setClientId(opportunity.clientId)
     setOpportunityName(opportunity.opportunityName)
     setNumber(opportunity.number)
     setOpen(true)
@@ -41,8 +47,8 @@ export default function InformacoesBlock({ opportunity, onSave }) {
 
   function handleSubmit(event) {
     event.preventDefault()
-    if (!clientName.trim() || !opportunityName.trim() || !number.trim()) return
-    onSave({ clientName, opportunityName, number })
+    if (!clientId || !opportunityName.trim() || !number.trim()) return
+    onSave({ clientId, opportunityName, number })
     setOpen(false)
   }
 
@@ -59,7 +65,7 @@ export default function InformacoesBlock({ opportunity, onSave }) {
         </IconButton>
       </Box>
       <Box className="flex flex-col gap-2">
-        <InfoRow label="Cliente" value={opportunity.clientName} />
+        <InfoRow label="Cliente" value={getClient(opportunity.clientId)?.name ?? 'Cliente removido'} />
         <InfoRow label="Oportunidade" value={opportunity.opportunityName} />
         <InfoRow label="Número" value={opportunity.number} />
         <InfoRow label="Criada em" value={createdAtLabel} />
@@ -69,13 +75,22 @@ export default function InformacoesBlock({ opportunity, onSave }) {
         <Box component="form" onSubmit={handleSubmit}>
           <DialogTitle>Editar informações</DialogTitle>
           <DialogContent className="flex flex-col gap-4 pt-2!">
-            <TextField
-              autoFocus
-              label="Nome do cliente"
-              value={clientName}
-              onChange={(event) => setClientName(event.target.value)}
-              fullWidth
-            />
+            <FormControl fullWidth>
+              <InputLabel id="opp-client-select-label">Cliente</InputLabel>
+              <Select
+                labelId="opp-client-select-label"
+                label="Cliente"
+                value={clientId ?? ''}
+                onChange={(event) => setClientId(event.target.value)}
+                autoFocus
+              >
+                {clients.map((client) => (
+                  <MenuItem key={client.id} value={client.id}>
+                    {client.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               label="Nome da oportunidade"
               value={opportunityName}

@@ -9,41 +9,51 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  InputLabel,
   List,
   ListItemButton,
   ListItemText,
+  MenuItem,
+  Select,
   Tab,
   Tabs,
   TextField,
   Typography,
 } from '@mui/material'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import { useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useOpportunities } from '../../context/OpportunitiesContext.jsx'
+import { useClients } from '../../context/ClientsContext.jsx'
 
 export default function OportunidadesPage() {
   const navigate = useNavigate()
   const { opportunities, addOpportunity } = useOpportunities()
+  const { clients, getClient } = useClients()
   const [tab, setTab] = useState('lista')
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [clientName, setClientName] = useState('')
+  const [clientId, setClientId] = useState('')
   const [opportunityName, setOpportunityName] = useState('')
 
   function handleClose() {
     setDialogOpen(false)
-    setClientName('')
+    setClientId('')
     setOpportunityName('')
   }
 
   function handleCreate(event) {
     event.preventDefault()
-    if (!clientName.trim() || !opportunityName.trim()) return
-    addOpportunity(clientName, opportunityName)
+    if (!clientId || !opportunityName.trim()) return
+    addOpportunity(clientId, opportunityName)
     handleClose()
   }
 
   function openOpportunity(id) {
     navigate(`/dashboard/oportunidades/${id}`)
+  }
+
+  function clientLabel(id) {
+    return getClient(id)?.name ?? 'Cliente removido'
   }
 
   return (
@@ -70,7 +80,7 @@ export default function OportunidadesPage() {
         <List className="border border-gray-200" sx={{ bgcolor: 'background.paper' }}>
           {opportunities.map((opp) => (
             <ListItemButton key={opp.id} divider onClick={() => openOpportunity(opp.id)}>
-              <ListItemText primary={opp.opportunityName} secondary={opp.clientName} />
+              <ListItemText primary={opp.opportunityName} secondary={clientLabel(opp.clientId)} />
             </ListItemButton>
           ))}
         </List>
@@ -84,7 +94,7 @@ export default function OportunidadesPage() {
                     {opp.opportunityName}
                   </Typography>
                   <Typography variant="body2" className="text-gray-500">
-                    {opp.clientName}
+                    {clientLabel(opp.clientId)}
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -97,13 +107,32 @@ export default function OportunidadesPage() {
         <Box component="form" onSubmit={handleCreate}>
           <DialogTitle>Nova oportunidade</DialogTitle>
           <DialogContent className="flex flex-col gap-4 pt-2!">
-            <TextField
-              autoFocus
-              label="Nome do cliente"
-              value={clientName}
-              onChange={(event) => setClientName(event.target.value)}
-              fullWidth
-            />
+            {clients.length === 0 ? (
+              <Typography variant="body2" className="text-gray-500">
+                Nenhum cliente cadastrado ainda.{' '}
+                <RouterLink to="/dashboard/clientes" onClick={handleClose}>
+                  Cadastre um cliente
+                </RouterLink>{' '}
+                antes de criar uma oportunidade.
+              </Typography>
+            ) : (
+              <FormControl fullWidth>
+                <InputLabel id="client-select-label">Cliente</InputLabel>
+                <Select
+                  labelId="client-select-label"
+                  label="Cliente"
+                  value={clientId}
+                  onChange={(event) => setClientId(event.target.value)}
+                  autoFocus
+                >
+                  {clients.map((client) => (
+                    <MenuItem key={client.id} value={client.id}>
+                      {client.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <TextField
               label="Nome da oportunidade"
               value={opportunityName}
@@ -113,7 +142,7 @@ export default function OportunidadesPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancelar</Button>
-            <Button type="submit" variant="contained">
+            <Button type="submit" variant="contained" disabled={clients.length === 0}>
               Criar
             </Button>
           </DialogActions>

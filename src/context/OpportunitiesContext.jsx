@@ -12,7 +12,7 @@ export function OpportunitiesProvider({ children }) {
   const [opportunities, setOpportunities] = useState([])
   const nextNumberRef = useRef(1)
 
-  const addOpportunity = useCallback((clientName, opportunityName) => {
+  const addOpportunity = useCallback((clientId, opportunityName) => {
     const number = `OP-${String(nextNumberRef.current).padStart(4, '0')}`
     nextNumberRef.current += 1
     setOpportunities((prev) => [
@@ -20,7 +20,7 @@ export function OpportunitiesProvider({ children }) {
       {
         id: crypto.randomUUID(),
         number,
-        clientName,
+        clientId,
         opportunityName,
         createdAt: new Date().toISOString(),
         stage: STAGES[0],
