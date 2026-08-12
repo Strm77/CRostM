@@ -63,30 +63,36 @@ export default function TimelineBlock({ events, onAdd, onUpdate, onDelete }) {
         </Button>
       </Box>
 
-      <Box className="flex items-start overflow-x-auto pb-2">
-        {sortedEvents.map((event, index) => (
-          <Box key={event.id} className="flex shrink-0 items-start">
-            {index > 0 && <Box className="mt-[5px] h-px w-8 shrink-0 bg-gray-200" />}
-            <Box className="flex w-40 shrink-0 flex-col items-center gap-1 text-center">
-              <Box className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#7c3aed]" />
-              <Typography variant="body2" className="font-medium">
-                {event.label}
-              </Typography>
-              <Typography variant="caption" className="text-gray-500">
-                {new Date(event.date).toLocaleString('pt-BR')}
-              </Typography>
-              <Box className="flex gap-1">
-                <IconButton size="small" onClick={() => openEdit(event)} aria-label="Editar etapa">
-                  <EditRoundedIcon fontSize="inherit" />
-                </IconButton>
-                <IconButton size="small" onClick={() => onDelete(event.id)} aria-label="Excluir etapa">
-                  <DeleteRoundedIcon fontSize="inherit" />
-                </IconButton>
+      {sortedEvents.length === 0 ? (
+        <Typography variant="body2" className="text-gray-500">
+          Nenhuma etapa registrada ainda.
+        </Typography>
+      ) : (
+        <Box className="flex h-[132px] items-start overflow-x-auto overflow-y-hidden pb-2">
+          {sortedEvents.map((event, index) => (
+            <Box key={event.id} className="flex h-full shrink-0 items-start">
+              {index > 0 && <Box className="mt-[5px] h-px w-8 shrink-0 bg-gray-200" />}
+              <Box className="flex h-full w-40 shrink-0 flex-col items-center gap-1 text-center">
+                <Box className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#7c3aed]" />
+                <Typography variant="body2" className="line-clamp-2 font-medium" title={event.label}>
+                  {event.label}
+                </Typography>
+                <Typography variant="caption" className="text-gray-500">
+                  {new Date(event.date).toLocaleString('pt-BR')}
+                </Typography>
+                <Box className="mt-auto flex gap-1">
+                  <IconButton size="small" onClick={() => openEdit(event)} aria-label="Editar etapa">
+                    <EditRoundedIcon fontSize="inherit" />
+                  </IconButton>
+                  <IconButton size="small" onClick={() => onDelete(event.id)} aria-label="Excluir etapa">
+                    <DeleteRoundedIcon fontSize="inherit" />
+                  </IconButton>
+                </Box>
               </Box>
             </Box>
-          </Box>
-        ))}
-      </Box>
+          ))}
+        </Box>
+      )}
 
       <Dialog open={Boolean(dialogState)} onClose={() => setDialogState(null)} fullWidth maxWidth="xs">
         <Box component="form" onSubmit={handleSubmit}>
