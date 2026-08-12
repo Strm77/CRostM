@@ -10,6 +10,8 @@ function App() {
       <Route path="/" element={<AuthPage />} />
       <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<DashboardHome />} />
+        <Route path="oportunidades" element={<PlaceholderPage title="Oportunidades" />} />
+        <Route path="clientes" element={<PlaceholderPage title="Clientes" />} />
         <Route path="perfil" element={<PlaceholderPage title="Perfil" />} />
         <Route path="configuracoes" element={<PlaceholderPage title="Configurações" />} />
       </Route>
