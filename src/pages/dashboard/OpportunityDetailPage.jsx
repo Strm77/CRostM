@@ -109,7 +109,7 @@ export default function OpportunityDetailPage() {
         </Box>
 
         <Box className="flex w-full md:w-1/2">
-          <NotesEditor value={opportunity.notes} onChange={(notes) => updateNotes(opportunity.id, notes)} />
+          <NotesEditor value={opportunity.notes} onSave={(notes) => updateNotes(opportunity.id, notes)} />
         </Box>
       </Box>
 
