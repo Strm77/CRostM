@@ -1,48 +1,33 @@
-import { Box, Button, Chip, Paper, Typography } from '@mui/material'
+import { useState } from 'react'
+import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useOpportunities } from '../../context/OpportunitiesContext.jsx'
-
-function InfoRow({ label, value }) {
-  return (
-    <Box className="flex items-center justify-between gap-4">
-      <Typography variant="body2" className="text-gray-500">
-        {label}
-      </Typography>
-      <Typography variant="body2" className="font-medium">
-        {value}
-      </Typography>
-    </Box>
-  )
-}
-
-function Timeline({ items }) {
-  return (
-    <Box className="flex flex-col">
-      {items.map((item, index) => (
-        <Box key={item.label} className="flex gap-3">
-          <Box className="flex flex-col items-center">
-            <Box className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-[#7c3aed]" />
-            {index < items.length - 1 && <Box className="w-px flex-1 bg-gray-200" />}
-          </Box>
-          <Box className="pb-4">
-            <Typography variant="body2" className="font-medium">
-              {item.label}
-            </Typography>
-            <Typography variant="caption" className="text-gray-500">
-              {item.date}
-            </Typography>
-          </Box>
-        </Box>
-      ))}
-    </Box>
-  )
-}
+import StageStepper from './opportunity/StageStepper.jsx'
+import InformacoesBlock from './opportunity/InformacoesBlock.jsx'
+import FinanceiroBlock from './opportunity/FinanceiroBlock.jsx'
+import TimelineBlock from './opportunity/TimelineBlock.jsx'
+import AcoesBlock from './opportunity/AcoesBlock.jsx'
 
 export default function OpportunityDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { getOpportunity } = useOpportunities()
+  const {
+    getOpportunity,
+    updateOpportunity,
+    updateFinancials,
+    setStage,
+    addTimelineEvent,
+    updateTimelineEvent,
+    deleteTimelineEvent,
+    addAction,
+    updateAction,
+    deleteAction,
+    deleteOpportunity,
+  } = useOpportunities()
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
+
   const opportunity = getOpportunity(id)
 
   if (!opportunity) {
@@ -58,17 +43,29 @@ export default function OpportunityDetailPage() {
     )
   }
 
-  const createdAtLabel = new Date(opportunity.createdAt).toLocaleString('pt-BR')
+  function handleDelete() {
+    deleteOpportunity(opportunity.id)
+    navigate('/dashboard/oportunidades')
+  }
 
   return (
     <Box className="flex flex-col gap-6">
-      <Button
-        startIcon={<ArrowBackRoundedIcon />}
-        onClick={() => navigate('/dashboard/oportunidades')}
-        className="self-start"
-      >
-        Oportunidades
-      </Button>
+      <Box className="flex items-center justify-between">
+        <Button
+          startIcon={<ArrowBackRoundedIcon />}
+          onClick={() => navigate('/dashboard/oportunidades')}
+          className="self-start"
+        >
+          Oportunidades
+        </Button>
+        <IconButton
+          color="error"
+          onClick={() => setConfirmDeleteOpen(true)}
+          aria-label="Excluir oportunidade"
+        >
+          <DeleteRoundedIcon />
+        </IconButton>
+      </Box>
 
       <Box className="flex flex-wrap items-center gap-3">
         <Chip label={opportunity.number} color="primary" className="font-semibold" />
@@ -82,46 +79,44 @@ export default function OpportunityDetailPage() {
         </Box>
       </Box>
 
-      <Box className="flex flex-wrap gap-4">
-        <Paper elevation={0} className="min-w-[320px] flex-1 border border-gray-200 p-4">
-          <Typography variant="subtitle1" className="mb-3 font-medium">
-            Informações
-          </Typography>
-          <Box className="flex flex-col gap-2">
-            <InfoRow label="Cliente" value={opportunity.clientName} />
-            <InfoRow label="Oportunidade" value={opportunity.opportunityName} />
-            <InfoRow label="Número" value={opportunity.number} />
-            <InfoRow label="Criada em" value={createdAtLabel} />
-          </Box>
-        </Paper>
+      <StageStepper stage={opportunity.stage} onChange={(stage) => setStage(opportunity.id, stage)} />
 
-        <Paper elevation={0} className="min-w-[320px] flex-1 border border-gray-200 p-4">
-          <Typography variant="subtitle1" className="mb-3 font-medium">
-            Financeiro
-          </Typography>
-          <Box className="flex flex-col gap-2">
-            <InfoRow label="Valor estimado" value="Não informado" />
-            <InfoRow label="Valor fechado" value="Não informado" />
-            <InfoRow label="Probabilidade" value="Não informado" />
-          </Box>
-        </Paper>
+      <Box className="flex flex-wrap gap-4">
+        <InformacoesBlock opportunity={opportunity} onSave={(patch) => updateOpportunity(opportunity.id, patch)} />
+        <FinanceiroBlock
+          financials={opportunity.financials}
+          onSave={(financials) => updateFinancials(opportunity.id, financials)}
+        />
       </Box>
 
-      <Paper elevation={0} className="border border-gray-200 p-4">
-        <Typography variant="subtitle1" className="mb-3 font-medium">
-          Timeline
-        </Typography>
-        <Timeline items={[{ label: 'Oportunidade criada', date: createdAtLabel }]} />
-      </Paper>
+      <TimelineBlock
+        events={opportunity.timelineEvents}
+        onAdd={(event) => addTimelineEvent(opportunity.id, event)}
+        onUpdate={(eventId, patch) => updateTimelineEvent(opportunity.id, eventId, patch)}
+        onDelete={(eventId) => deleteTimelineEvent(opportunity.id, eventId)}
+      />
 
-      <Paper elevation={0} className="border border-gray-200 p-4">
-        <Typography variant="subtitle1" className="mb-3 font-medium">
-          Ações realizadas
-        </Typography>
-        <Typography variant="body2" className="text-gray-500">
-          Nenhuma ação registrada ainda.
-        </Typography>
-      </Paper>
+      <AcoesBlock
+        actions={opportunity.actions}
+        onAdd={(action) => addAction(opportunity.id, action)}
+        onUpdate={(actionId, patch) => updateAction(opportunity.id, actionId, patch)}
+        onDelete={(actionId) => deleteAction(opportunity.id, actionId)}
+      />
+
+      <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)}>
+        <DialogTitle>Excluir oportunidade?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2">
+            Essa ação não pode ser desfeita. Todos os dados desta oportunidade serão perdidos.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteOpen(false)}>Cancelar</Button>
+          <Button color="error" variant="contained" onClick={handleDelete}>
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
