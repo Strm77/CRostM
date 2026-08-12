@@ -50,6 +50,8 @@ export default function TimelineBlock({ events, onAdd, onUpdate, onDelete }) {
     setDialogState(null)
   }
 
+  const sortedEvents = [...events].sort((a, b) => new Date(b.date) - new Date(a.date))
+
   return (
     <Paper elevation={0} className="border border-gray-200 p-4">
       <Box className="mb-3 flex items-center justify-between">
@@ -62,7 +64,7 @@ export default function TimelineBlock({ events, onAdd, onUpdate, onDelete }) {
       </Box>
 
       <Box className="flex items-start overflow-x-auto pb-2">
-        {events.map((event, index) => (
+        {sortedEvents.map((event, index) => (
           <Box key={event.id} className="flex shrink-0 items-start">
             {index > 0 && <Box className="mt-[5px] h-px w-8 shrink-0 bg-gray-200" />}
             <Box className="flex w-40 shrink-0 flex-col items-center gap-1 text-center">

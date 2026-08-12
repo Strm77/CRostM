@@ -22,7 +22,7 @@ export default function NotesEditor({ value, onSave }) {
   }
 
   return (
-    <Paper elevation={0} className="flex h-full min-h-[420px] flex-1 flex-col border border-gray-200 p-4">
+    <Paper elevation={0} className="flex min-h-[320px] flex-1 flex-col border border-gray-200 p-4">
       <Box className="mb-3 flex items-center justify-between">
         <Typography variant="subtitle1" className="font-medium">
           Notas (Markdown)

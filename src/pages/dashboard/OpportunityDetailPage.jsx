@@ -9,6 +9,7 @@ import InformacoesBlock from './opportunity/InformacoesBlock.jsx'
 import FinanceiroBlock from './opportunity/FinanceiroBlock.jsx'
 import TimelineBlock from './opportunity/TimelineBlock.jsx'
 import AcoesBlock from './opportunity/AcoesBlock.jsx'
+import ToDoBlock from './opportunity/ToDoBlock.jsx'
 import NotesEditor from './opportunity/NotesEditor.jsx'
 
 export default function OpportunityDetailPage() {
@@ -26,6 +27,10 @@ export default function OpportunityDetailPage() {
     addAction,
     updateAction,
     deleteAction,
+    addTodo,
+    updateTodo,
+    deleteTodo,
+    completeTodo,
     deleteOpportunity,
   } = useOpportunities()
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
@@ -108,7 +113,14 @@ export default function OpportunityDetailPage() {
           />
         </Box>
 
-        <Box className="flex w-full md:w-1/2">
+        <Box className="flex w-full flex-col gap-4 md:w-1/2">
+          <ToDoBlock
+            todos={opportunity.todos}
+            onAdd={(text) => addTodo(opportunity.id, text)}
+            onUpdate={(todoId, patch) => updateTodo(opportunity.id, todoId, patch)}
+            onDelete={(todoId) => deleteTodo(opportunity.id, todoId)}
+            onComplete={(todoId) => completeTodo(opportunity.id, todoId)}
+          />
           <NotesEditor value={opportunity.notes} onSave={(notes) => updateNotes(opportunity.id, notes)} />
         </Box>
       </Box>

@@ -27,6 +27,7 @@ export function OpportunitiesProvider({ children }) {
         financials: { estimatedValue: null, closedValue: null, probability: null },
         timelineEvents: [createTimelineEvent('Oportunidade criada')],
         actions: [],
+        todos: [],
         notes: '',
       },
     ])
@@ -121,6 +122,43 @@ export function OpportunitiesProvider({ children }) {
     )
   }, [])
 
+  const addTodo = useCallback((id, text) => {
+    setOpportunities((prev) =>
+      prev.map((opp) => (opp.id === id ? { ...opp, todos: [...opp.todos, { id: crypto.randomUUID(), text }] } : opp)),
+    )
+  }, [])
+
+  const updateTodo = useCallback((id, todoId, patch) => {
+    setOpportunities((prev) =>
+      prev.map((opp) =>
+        opp.id === id
+          ? { ...opp, todos: opp.todos.map((todo) => (todo.id === todoId ? { ...todo, ...patch } : todo)) }
+          : opp,
+      ),
+    )
+  }, [])
+
+  const deleteTodo = useCallback((id, todoId) => {
+    setOpportunities((prev) =>
+      prev.map((opp) => (opp.id === id ? { ...opp, todos: opp.todos.filter((todo) => todo.id !== todoId) } : opp)),
+    )
+  }, [])
+
+  const completeTodo = useCallback((id, todoId) => {
+    setOpportunities((prev) =>
+      prev.map((opp) => {
+        if (opp.id !== id) return opp
+        const todo = opp.todos.find((item) => item.id === todoId)
+        if (!todo) return opp
+        return {
+          ...opp,
+          todos: opp.todos.filter((item) => item.id !== todoId),
+          actions: [...opp.actions, { id: crypto.randomUUID(), label: todo.text, date: new Date().toISOString(), note: '' }],
+        }
+      }),
+    )
+  }, [])
+
   const deleteOpportunity = useCallback((id) => {
     setOpportunities((prev) => prev.filter((opp) => opp.id !== id))
   }, [])
@@ -142,6 +180,10 @@ export function OpportunitiesProvider({ children }) {
         addAction,
         updateAction,
         deleteAction,
+        addTodo,
+        updateTodo,
+        deleteTodo,
+        completeTodo,
         deleteOpportunity,
         getOpportunity,
       }}
